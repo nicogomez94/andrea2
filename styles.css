@@ -217,7 +217,7 @@ img {
   position: relative;
   color: #555550;
   font-family: var(--serif);
-  font-size: clamp(21px, 6vw, 30px);
+  font-size: clamp(15px, 6vw, 20px);
   line-height: 1.05;
   transition: color 180ms ease, transform 180ms ease;
 }
