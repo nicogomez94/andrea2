@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: andrea-alkalay-portfolio
+    name: andrea2
     runtime: static
     staticPublishPath: .
     pullRequestPreviewsEnabled: false
