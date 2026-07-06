@@ -330,7 +330,7 @@ h2 {
 .gallery-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 0;
 }
 
 .artwork {
@@ -403,7 +403,6 @@ h2 {
   outline-offset: 3px;
 }
 
-.about-section,
 .exhibitions-section,
 .contact-section {
   padding: 80px 20px;
@@ -671,7 +670,6 @@ dialog.lightbox .lightbox-next {
     padding: 0 0 100px;
   }
 
-  .about-section,
   .exhibitions-section,
   .contact-section {
     display: grid;
@@ -765,7 +763,6 @@ dialog.lightbox .lightbox-next {
     padding: 0 0 110px;
   }
 
-  .about-section,
   .exhibitions-section,
   .contact-section {
     padding-right: 6vw;
