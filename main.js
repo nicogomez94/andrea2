@@ -6,7 +6,12 @@ const artworks = [...document.querySelectorAll(".artwork")];
 const lightbox = document.querySelector("#lightbox");
 const lightboxImage = document.querySelector("#lightbox-image");
 const lightboxCaption = document.querySelector("#lightbox-caption");
+const lightboxCounter = document.querySelector("#lightbox-counter");
 const lightboxClose = document.querySelector(".lightbox-close");
+const lightboxPrev = document.querySelector(".lightbox-prev");
+const lightboxNext = document.querySelector(".lightbox-next");
+let slideshowItems = [];
+let currentSlideIndex = 0;
 
 const revealObserver = new IntersectionObserver(
   (entries, observer) => {
@@ -24,6 +29,49 @@ document.querySelectorAll(".fade-in").forEach((element) => revealObserver.observ
 function closeMenu() {
   body.classList.remove("menu-open");
   menuToggle.setAttribute("aria-expanded", "false");
+}
+
+function getVisibleArtworks() {
+  return artworks.filter((artwork) => !artwork.hidden);
+}
+
+function renderSlide(index) {
+  if (!slideshowItems.length) return;
+
+  const boundedIndex = (index + slideshowItems.length) % slideshowItems.length;
+  currentSlideIndex = boundedIndex;
+  const artwork = slideshowItems[boundedIndex];
+  const sourceImage = artwork.querySelector("img");
+
+  lightboxImage.src = sourceImage.src;
+  lightboxImage.alt = sourceImage.alt;
+  lightboxCaption.textContent = artwork.dataset.title;
+  lightboxCounter.textContent = `${String(boundedIndex + 1).padStart(2, "0")} / ${String(slideshowItems.length).padStart(2, "0")}`;
+}
+
+function openLightbox(artwork) {
+  slideshowItems = getVisibleArtworks();
+  currentSlideIndex = slideshowItems.indexOf(artwork);
+  if (currentSlideIndex < 0) currentSlideIndex = 0;
+  renderSlide(currentSlideIndex);
+  lightbox.showModal();
+  body.classList.add("lightbox-open");
+}
+
+function closeLightbox() {
+  lightbox.close();
+  body.classList.remove("lightbox-open");
+  lightboxImage.src = "";
+}
+
+function showNextSlide() {
+  if (!slideshowItems.length) return;
+  renderSlide(currentSlideIndex + 1);
+}
+
+function showPreviousSlide() {
+  if (!slideshowItems.length) return;
+  renderSlide(currentSlideIndex - 1);
 }
 
 menuToggle.addEventListener("click", () => {
@@ -56,21 +104,6 @@ filterButtons.forEach((button) => {
   });
 });
 
-function openLightbox(artwork) {
-  const sourceImage = artwork.querySelector("img");
-  lightboxImage.src = sourceImage.src;
-  lightboxImage.alt = sourceImage.alt;
-  lightboxCaption.textContent = artwork.dataset.title;
-  lightbox.showModal();
-  body.classList.add("lightbox-open");
-}
-
-function closeLightbox() {
-  lightbox.close();
-  body.classList.remove("lightbox-open");
-  lightboxImage.src = "";
-}
-
 artworks.forEach((artwork) => {
   artwork.addEventListener("click", () => openLightbox(artwork));
   artwork.addEventListener("keydown", (event) => {
@@ -82,9 +115,26 @@ artworks.forEach((artwork) => {
 });
 
 lightboxClose.addEventListener("click", closeLightbox);
+lightboxPrev.addEventListener("click", showPreviousSlide);
+lightboxNext.addEventListener("click", showNextSlide);
 lightbox.addEventListener("click", (event) => {
   if (event.target === lightbox) closeLightbox();
 });
-lightbox.addEventListener("cancel", () => body.classList.remove("lightbox-open"));
+lightbox.addEventListener("cancel", () => {
+  body.classList.remove("lightbox-open");
+  lightboxImage.src = "";
+  lightboxCounter.textContent = "";
+});
+document.addEventListener("keydown", (event) => {
+  if (!body.classList.contains("lightbox-open")) return;
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    showPreviousSlide();
+  }
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    showNextSlide();
+  }
+});
 
 document.querySelector("#year").textContent = new Date().getFullYear();
